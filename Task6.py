@@ -152,9 +152,9 @@ def Move(S, ns, h):
     hpi=0.5*math.atan2(0,-1)
     for i in range(0,n): 
         if(ss[i][0]==hpi or ss[i][0]==(-1)*hpi):
-            ss[i][1]+=ns[i][0]
+            ss[i][1]+=h*ns[i][0]
         else:
-            b=ns[i][1]/(math.cos(ss[i][0])**2)
+            b=h*ns[i][1]/(math.cos(ss[i][0])**2)
             ss[i][1]+=b
     C=Sides(ss, n) 
     return C
@@ -203,25 +203,31 @@ def New_dots(S):
  
  
 def Autotest():
-    s=[[0,0],[0,1],[1,0],[1,1]]
-    d=Dist(s[0],s[1])
-    if(d!=1):
+    dots=[[1,1],[1,2],[2,2],[2,1]]
+    n=4
+    V=Vertices(n, dots, 1)
+    S=Get_sides(V)
+    Z=S.Get_sides()
+    if(Z[0][1]!=1 or Z[1][1]!=2 or Z[2][1]!=2 or Z[3][1]!=1):
         print("Autotest failed")
-        exit(1)
-    d=Angle(s[0],s[1],s[3])
-    b=Angle(s[3],s[2],s[0])
-    if(d!=b):
+        exit()
+    ns=Normals(V)
+    if(ns[0][0]!=-1 or ns[1][0]!=0 or ns[2][0]!=1 or ns[3][0]!=0 or
+       ns[0][1]!=0 or ns[1][1]!=1 or ns[2][1]!=0 or ns[3][1]!=-1):
         print("Autotest failed")
-        exit(2)   
-    b=Get_next(s,4,1) 
-    if(b!=3):
+        exit()    
+    C=Move(S, ns, 1)
+    Z=C.Get_sides()
+    if(Z[0][1]!=0 or Z[1][1]!=3 or Z[2][1]!=3 or Z[3][1]!=0):
         print("Autotest failed")
-        exit(3)          
+        exit()    
+    ns=New_dots(C)
+    if(ns[0][0]!=0 or ns[1][0]!=0 or ns[2][0]!=3 or ns[3][0]!=3 or
+       ns[0][1]!=0 or ns[1][1]!=3 or ns[2][1]!=3 or ns[3][1]!=0):
+        print("Autotest failed")
+        exit()    
     print("Autotest passed")
         
-
-
-
 
 try:
     file = open("data.txt", "r")
@@ -229,6 +235,7 @@ except:
     print("Cannot open file")
     exit()
 
+Autotest()
 V = Get_dots(file)
 n=V.Get_n()
 if(n<3):
